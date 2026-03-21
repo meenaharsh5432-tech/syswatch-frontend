@@ -126,43 +126,37 @@ export default function Dashboard() {
             <MetricChart title="Net↓" data={netRxHistory} unit=" Mb/s" mini />
             <MetricChart title="Net↑" data={netTxHistory} unit=" Mb/s" mini />
             <div style={s.memDetail}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={s.memLabel}>Memory</span>
                 {metrics && (
-                  <div style={{ position: 'relative' }}>
-                    <button
-                      onClick={() => setShowMemInfo(v => !v)}
-                      style={s.infoBtn}
-                      title="Memory info"
-                    >i</button>
-                    {showMemInfo && (
-                      <div style={s.memTooltip}>
-                        <div style={s.memTooltipRow}>
-                          <span style={s.memTooltipLabel}>Physical RAM</span>
-                          <span style={s.memTooltipVal}>{physicalGB} GB</span>
-                        </div>
-                        {pageFileGB > 0 && (
-                          <>
-                            <div style={s.memTooltipRow}>
-                              <span style={s.memTooltipLabel}>Page File</span>
-                              <span style={s.memTooltipVal}>+ {pageFileGB} GB</span>
-                            </div>
-                            <div style={{ borderTop: '1px solid #30363d', marginTop: 4, paddingTop: 4 }}>
-                              <div style={s.memTooltipRow}>
-                                <span style={s.memTooltipLabel}>Total shown</span>
-                                <span style={{ ...s.memTooltipVal, color: '#f0883e' }}>
-                                  = {(parseFloat(physicalGB) + parseFloat(pageFileGB)).toFixed(1)} GB
-                                </span>
-                              </div>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  <button onClick={() => setShowMemInfo(v => !v)} style={s.infoBtn}>{showMemInfo ? '▲' : 'i'}</button>
                 )}
               </div>
               <span style={s.memValue}>{memGB}</span>
+              {showMemInfo && metrics && (
+                <div style={s.memExpanded}>
+                  <div style={s.memTooltipRow}>
+                    <span style={s.memTooltipLabel}>Physical RAM</span>
+                    <span style={s.memTooltipVal}>{physicalGB} GB</span>
+                  </div>
+                  {pageFileGB > 0 && (
+                    <>
+                      <div style={s.memTooltipRow}>
+                        <span style={s.memTooltipLabel}>Page File</span>
+                        <span style={s.memTooltipVal}>+ {pageFileGB} GB</span>
+                      </div>
+                      <div style={{ borderTop: '1px solid #30363d', marginTop: 4, paddingTop: 4 }}>
+                        <div style={s.memTooltipRow}>
+                          <span style={s.memTooltipLabel}>Total shown</span>
+                          <span style={{ ...s.memTooltipVal, color: '#f0883e' }}>
+                            = {(parseFloat(physicalGB) + parseFloat(pageFileGB)).toFixed(1)} GB
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -226,7 +220,7 @@ const s = {
   memLabel: { color: '#6e7681', fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase' },
   memValue: { color: '#c9d1d9', fontSize: 12, fontVariantNumeric: 'tabular-nums', fontWeight: 600 },
   infoBtn: { background: '#21262d', border: '1px solid #30363d', borderRadius: '50%', color: '#8b949e', cursor: 'pointer', fontSize: 9, fontWeight: 700, height: 14, lineHeight: '12px', padding: 0, textAlign: 'center', width: 14 },
-  memTooltip: { background: '#1c2128', border: '1px solid #30363d', borderRadius: 8, top: 0, boxShadow: '0 4px 16px rgba(0,0,0,0.5)', left: 'calc(100% + 8px)', minWidth: 180, padding: '10px 12px', position: 'absolute', zIndex: 100 },
+  memExpanded: { borderTop: '1px solid #21262d', marginTop: 6, paddingTop: 6, display: 'flex', flexDirection: 'column', gap: 3 },
   memTooltipRow: { display: 'flex', justifyContent: 'space-between', marginBottom: 4 },
   memTooltipLabel: { color: '#8b949e', fontSize: 11 },
   memTooltipVal: { color: '#e6edf3', fontSize: 11, fontWeight: 600 },
