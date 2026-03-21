@@ -1,0 +1,133 @@
+/* ═══════════════════════════════
+   DASHBOARD
+═══════════════════════════════ */
+
+@media (max-width: 767px) {
+  .dash-app {
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  .dash-topbar {
+    padding: 0 12px !important;
+    gap: 8px !important;
+    height: 48px !important;
+  }
+  .dash-topcenter {
+    display: none !important;
+  }
+  .dash-topright {
+    gap: 6px !important;
+    min-width: unset !important;
+  }
+  .dash-clock {
+    display: none !important;
+  }
+  .dash-username {
+    display: none !important;
+  }
+  .dash-topbtn {
+    display: none !important;
+  }
+  .dash-layout {
+    grid-template-columns: 1fr !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  .dash-sidebar {
+    display: none !important;
+  }
+  .dash-main {
+    overflow: visible !important;
+    padding: 8px !important;
+  }
+  .dash-charts {
+    grid-template-columns: 1fr !important;
+    flex: none !important;
+  }
+  .dash-logarea {
+    min-height: 260px !important;
+    flex: none !important;
+  }
+  .dash-right {
+    border-left: none !important;
+    border-top: 1px solid #21262d;
+    min-height: 360px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1099px) {
+  .dash-layout {
+    grid-template-columns: 180px 1fr !important;
+  }
+  .dash-right {
+    display: none !important;
+  }
+  .dash-topright {
+    min-width: unset !important;
+  }
+  .dash-charts {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* ═══════════════════════════════
+   LANDING
+═══════════════════════════════ */
+
+@media (max-width: 767px) {
+  .land-nav {
+    padding: 12px 20px !important;
+  }
+  .land-hero {
+    flex-direction: column !important;
+    padding: 40px 20px !important;
+    gap: 32px !important;
+  }
+  .land-hero-title {
+    font-size: 32px !important;
+  }
+  .land-hero-sub {
+    font-size: 15px !important;
+    margin-bottom: 24px !important;
+  }
+  .land-hero-visual {
+    width: 100% !important;
+  }
+  .land-section {
+    padding: 48px 20px !important;
+  }
+  .land-footer {
+    padding: 20px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .land-nav {
+    padding: 14px 28px !important;
+  }
+  .land-hero {
+    padding: 56px 28px !important;
+    gap: 36px !important;
+  }
+  .land-hero-title {
+    font-size: 40px !important;
+  }
+  .land-section {
+    padding: 60px 28px !important;
+  }
+  .land-footer {
+    padding: 20px 28px !important;
+  }
+}
+
+/* ═══════════════════════════════
+   BILLING
+═══════════════════════════════ */
+
+@media (max-width: 767px) {
+  .bill-page {
+    padding: 20px 16px !important;
+  }
+}
