@@ -18,8 +18,9 @@ export default function Login() {
     window.location.href = `${API_URL}/auth/google`;
   };
 
+  const errorDetail = params.get('message');
   const errorMessages = {
-    auth_failed: 'Authentication failed. Please try again.',
+    auth_failed: `Authentication failed: ${errorDetail || 'Please try again.'}`,
     oauth_not_configured: 'Google OAuth is not configured on this server.',
   };
 
