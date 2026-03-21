@@ -128,29 +128,16 @@ export default function Dashboard() {
             <div style={s.memDetail}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={s.memLabel}>Memory</span>
-                {metrics && parseFloat(pageFileGB) > 0 && (
-                  <button onClick={() => setShowMemInfo(v => !v)} style={s.infoBtn}>{showMemInfo ? '▲' : 'i'}</button>
+                {selectedAgentId === null && metrics && parseFloat(pageFileGB) > 0 && (
+                  <button onClick={() => setShowMemInfo(v => !v)} style={s.infoBtn}>{showMemInfo ? '▲' : '▼'}</button>
                 )}
               </div>
               <span style={s.memValue}>{memGB}</span>
-              {showMemInfo && metrics && parseFloat(pageFileGB) > 0 && (
+              {selectedAgentId === null && showMemInfo && metrics && parseFloat(pageFileGB) > 0 && (
                 <div style={s.memExpanded}>
-                  <div style={s.memTooltipRow}>
-                    <span style={s.memTooltipLabel}>Physical RAM</span>
-                    <span style={s.memTooltipVal}>{physicalGB} GB</span>
-                  </div>
-                  <div style={s.memTooltipRow}>
-                    <span style={s.memTooltipLabel}>Page File</span>
-                    <span style={s.memTooltipVal}>+ {pageFileGB} GB</span>
-                  </div>
-                  <div style={{ borderTop: '1px solid #30363d', marginTop: 4, paddingTop: 4 }}>
-                    <div style={s.memTooltipRow}>
-                      <span style={s.memTooltipLabel}>Total shown</span>
-                      <span style={{ ...s.memTooltipVal, color: '#f0883e' }}>
-                        = {(parseFloat(physicalGB) + parseFloat(pageFileGB)).toFixed(1)} GB
-                      </span>
-                    </div>
-                  </div>
+                  <span style={{ color: '#8b949e', fontSize: 11, lineHeight: 1.5 }}>
+                    This Shown Memory includes Page file, Memory = Physical RAM + Page File
+                  </span>
                 </div>
               )}
             </div>
