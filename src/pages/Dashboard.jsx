@@ -128,12 +128,12 @@ export default function Dashboard() {
             <div style={s.memDetail}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={s.memLabel}>Memory</span>
-                {selectedAgentId === null && metrics && parseFloat(pageFileGB) > 0 && (
+                {selectedAgentId === null && metrics && (
                   <button onClick={() => setShowMemInfo(v => !v)} style={s.infoBtn}>{showMemInfo ? '▲' : '▼'}</button>
                 )}
               </div>
               <span style={s.memValue}>{memGB}</span>
-              {selectedAgentId === null && showMemInfo && metrics && parseFloat(pageFileGB) > 0 && (
+              {selectedAgentId === null && showMemInfo && metrics && (
                 <div style={s.memExpanded}>
                   <span style={{ color: '#8b949e', fontSize: 11, lineHeight: 1.5 }}>
                     This Shown Memory includes Page file, Memory = Physical RAM + Page File
