@@ -142,14 +142,21 @@ export default function Dashboard() {
                           <span style={s.memTooltipVal}>{physicalGB} GB</span>
                         </div>
                         {pageFileGB > 0 && (
-                          <div style={s.memTooltipRow}>
-                            <span style={s.memTooltipLabel}>Page File</span>
-                            <span style={s.memTooltipVal}>{pageFileGB} GB</span>
-                          </div>
+                          <>
+                            <div style={s.memTooltipRow}>
+                              <span style={s.memTooltipLabel}>Page File</span>
+                              <span style={s.memTooltipVal}>+ {pageFileGB} GB</span>
+                            </div>
+                            <div style={{ borderTop: '1px solid #30363d', marginTop: 4, paddingTop: 4 }}>
+                              <div style={s.memTooltipRow}>
+                                <span style={s.memTooltipLabel}>Total shown</span>
+                                <span style={{ ...s.memTooltipVal, color: '#f0883e' }}>
+                                  = {(parseFloat(physicalGB) + parseFloat(pageFileGB)).toFixed(1)} GB
+                                </span>
+                              </div>
+                            </div>
+                          </>
                         )}
-                        <div style={s.memTooltipNote}>
-                          Windows page file is virtual memory on disk, not real RAM.
-                        </div>
                       </div>
                     )}
                   </div>
@@ -223,7 +230,6 @@ const s = {
   memTooltipRow: { display: 'flex', justifyContent: 'space-between', marginBottom: 4 },
   memTooltipLabel: { color: '#8b949e', fontSize: 11 },
   memTooltipVal: { color: '#e6edf3', fontSize: 11, fontWeight: 600 },
-  memTooltipNote: { borderTop: '1px solid #21262d', color: '#6e7681', fontSize: 10, lineHeight: 1.4, marginTop: 6, paddingTop: 6 },
   main: { display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0, overflow: 'hidden', padding: 12 },
   chartsGrid: { display: 'grid', flex: '0 0 360px', gap: 10, gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' },
   logArea: { display: 'flex', flex: 1, flexDirection: 'column', minHeight: 0 },
