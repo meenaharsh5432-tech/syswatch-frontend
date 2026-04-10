@@ -2,12 +2,36 @@ import React, { useState, useRef } from 'react';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
+const TABS = ['Linux', 'Mac', 'Windows', 'No-Root'];
+
+function getCommands(installCommand, backendUrl, apiKey) {
+  const manual = [
+    `curl -sSL ${backendUrl}/agent.js -o agent.js`,
+    `npm install systeminformation`,
+    `SYSWATCH_URL=${backendUrl} AGENT_KEY=${apiKey} node agent.js`
+  ].join('\n');
+
+  const winManual = [
+    `curl -sSL ${backendUrl}/agent.js -o agent.js`,
+    `npm install systeminformation`,
+    `$env:SYSWATCH_URL="${backendUrl}"; $env:AGENT_KEY="${apiKey}"; node agent.js`
+  ].join('\n');
+
+  return {
+    Linux: installCommand,
+    Mac: manual,
+    Windows: winManual,
+    'No-Root': manual
+  };
+}
+
 export default function AddAgentModal({ onClose, onCreated, getToken }) {
   const [name, setName] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [tab, setTab] = useState('Linux');
   const inputRef = useRef(null);
 
   async function handleCreate(e) {
@@ -37,10 +61,18 @@ export default function AddAgentModal({ onClose, onCreated, getToken }) {
   }
 
   function copyCommand() {
-    navigator.clipboard.writeText(result.installCommand);
+    const commands = getCommands(result.installCommand, API_URL || window.location.origin, result.apiKey);
+    navigator.clipboard.writeText(commands[tab]);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
+
+  const tabNotes = {
+    Linux: 'Requires root. Installs as a systemd service that auto-starts on reboot.',
+    Mac: 'Run each command in Terminal. Node.js must be installed (brew install node).',
+    Windows: 'Run in PowerShell. Node.js must be installed from nodejs.org.',
+    'No-Root': 'Works on Codespaces, Termux, or any machine without root. Node.js must be installed.'
+  };
 
   return (
     <div style={s.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -73,23 +105,26 @@ export default function AddAgentModal({ onClose, onCreated, getToken }) {
           <div style={s.success}>
             <div style={s.successIcon}>✓</div>
             <div style={s.successText}>Agent <strong>{result.agent.name}</strong> created!</div>
-            <p style={s.instructions}>
-              Run this command on your Linux server to install the monitoring agent:
-            </p>
+
+            <div style={s.tabs}>
+              {TABS.map(t => (
+                <button key={t} onClick={() => setTab(t)} style={{ ...s.tabBtn, ...(tab === t ? s.tabActive : {}) }}>{t}</button>
+              ))}
+            </div>
+
+            <div style={s.tabNote}>{tabNotes[tab]}</div>
+
             <div style={s.commandWrap}>
-              <code style={s.command}>{result.installCommand}</code>
+              <code style={s.command}>
+                {getCommands(result.installCommand, API_URL || window.location.origin, result.apiKey)[tab]}
+              </code>
               <button onClick={copyCommand} style={s.copyBtn}>
-                {copied ? '✓ Copied' : 'Copy'}
+                {copied ? '✓' : 'Copy'}
               </button>
             </div>
+
             <div style={s.warning}>
-              ⚠ Save this command — the API key will not be shown again.
-            </div>
-            <div style={s.requirements}>
-              <div style={s.reqTitle}>Requirements</div>
-              <div style={s.reqItem}>• Ubuntu 20.04+ / Debian 11+ / RHEL 8+</div>
-              <div style={s.reqItem}>• Root access (sudo)</div>
-              <div style={s.reqItem}>• Internet access to reach your backend</div>
+              ⚠ Save this — the API key will not be shown again.
             </div>
             <button onClick={onClose} style={s.doneBtn}>Done</button>
           </div>
@@ -120,8 +155,9 @@ const s = {
   command: { color: '#3fb950', flex: 1, fontFamily: 'monospace', fontSize: 11, overflowX: 'auto', padding: '10px 12px', whiteSpace: 'nowrap' },
   copyBtn: { background: '#21262d', border: 'none', borderLeft: '1px solid #30363d', color: '#e6edf3', cursor: 'pointer', fontSize: 12, fontWeight: 600, padding: '0 14px', whiteSpace: 'nowrap' },
   warning: { background: '#2d2515', border: '1px solid #5a4620', borderRadius: 6, color: '#e3b341', fontSize: 12, padding: '8px 12px' },
-  requirements: { background: '#0d1117', border: '1px solid #21262d', borderRadius: 6, padding: '12px 14px' },
-  reqTitle: { color: '#8b949e', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', marginBottom: 6, textTransform: 'uppercase' },
-  reqItem: { color: '#8b949e', fontSize: 12, marginBottom: 4 },
+  tabs: { display: 'flex', gap: 4 },
+  tabBtn: { background: 'none', border: '1px solid #30363d', borderRadius: 6, color: '#8b949e', cursor: 'pointer', fontSize: 12, fontWeight: 600, padding: '5px 12px' },
+  tabActive: { background: '#161b22', borderColor: '#58a6ff', color: '#58a6ff' },
+  tabNote: { color: '#6e7681', fontSize: 12, lineHeight: 1.5 },
   doneBtn: { background: '#1f6feb', border: 'none', borderRadius: 6, color: '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 600, padding: '10px 0', width: '100%' }
 };

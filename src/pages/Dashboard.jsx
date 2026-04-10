@@ -44,6 +44,7 @@ export default function Dashboard() {
   const [selectedAgentId, setSelectedAgentId] = useState(null);
   const [showAddAgent, setShowAddAgent] = useState(false);
   const [agentRefreshKey, setAgentRefreshKey] = useState(0);
+  const [showMemInfo, setShowMemInfo] = useState(false);
   const clock = useClock();
 
   const { metrics, containers, logs, connected } = useSSE(selectedAgentId);
@@ -57,6 +58,8 @@ export default function Dashboard() {
   const memGB = metrics
     ? `${(metrics.memory?.used / 1024 / 1024 / 1024).toFixed(1)} / ${(metrics.memory?.total / 1024 / 1024 / 1024).toFixed(1)} GB`
     : '-- GB';
+  const physicalGB = metrics ? (metrics.memory?.total / 1024 / 1024 / 1024).toFixed(1) : null;
+  const pageFileGB = metrics ? (metrics.memory?.pageFile / 1024 / 1024 / 1024).toFixed(1) : null;
 
   return (
     <div style={s.app} className="dash-app">
@@ -123,8 +126,20 @@ export default function Dashboard() {
             <MetricChart title="Net↓" data={netRxHistory} unit=" Mb/s" mini />
             <MetricChart title="Net↑" data={netTxHistory} unit=" Mb/s" mini />
             <div style={s.memDetail}>
-              <span style={s.memLabel}>Memory</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={s.memLabel}>Memory</span>
+                {selectedAgentId === null && metrics && (
+                  <button onClick={() => setShowMemInfo(v => !v)} style={s.infoBtn}>{showMemInfo ? '▲' : '▼'}</button>
+                )}
+              </div>
               <span style={s.memValue}>{memGB}</span>
+              {selectedAgentId === null && showMemInfo && metrics && (
+                <div style={s.memExpanded}>
+                  <span style={{ color: '#8b949e', fontSize: 11, lineHeight: 1.5 }}>
+                    This Shown Memory includes Page file, Memory = Physical RAM + Page File
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -184,9 +199,14 @@ const s = {
   sidebarDivider: { borderTop: '1px solid #21262d', margin: '10px 0' },
   sidebarLabel: { color: '#6e7681', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', padding: '2px 2px 4px', textTransform: 'uppercase' },
   addAgentBtn: { background: '#0d2035', border: '1px solid #1f4060', borderRadius: 6, color: '#58a6ff', cursor: 'pointer', fontSize: 12, fontWeight: 600, padding: '7px 0', textAlign: 'center', width: '100%', marginBottom: 4 },
-  memDetail: { background: '#161b22', border: '1px solid #21262d', borderRadius: 6, display: 'flex', flexDirection: 'column', gap: 2, padding: '8px 12px' },
+  memDetail: { background: '#161b22', border: '1px solid #21262d', borderRadius: 6, display: 'flex', flexDirection: 'column', gap: 2, padding: '8px 12px', position: 'relative' },
   memLabel: { color: '#6e7681', fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase' },
   memValue: { color: '#c9d1d9', fontSize: 12, fontVariantNumeric: 'tabular-nums', fontWeight: 600 },
+  infoBtn: { background: '#21262d', border: '1px solid #30363d', borderRadius: '50%', color: '#8b949e', cursor: 'pointer', fontSize: 9, fontWeight: 700, height: 14, lineHeight: '12px', padding: 0, textAlign: 'center', width: 14 },
+  memExpanded: { borderTop: '1px solid #21262d', marginTop: 6, paddingTop: 6, display: 'flex', flexDirection: 'column', gap: 3 },
+  memTooltipRow: { display: 'flex', justifyContent: 'space-between', marginBottom: 4 },
+  memTooltipLabel: { color: '#8b949e', fontSize: 11 },
+  memTooltipVal: { color: '#e6edf3', fontSize: 11, fontWeight: 600 },
   main: { display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0, overflow: 'hidden', padding: 12 },
   chartsGrid: { display: 'grid', flex: '0 0 360px', gap: 10, gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' },
   logArea: { display: 'flex', flex: 1, flexDirection: 'column', minHeight: 0 },

@@ -11,6 +11,7 @@ const STATUS_COLORS = {
 export default function AgentList({ selectedId, onSelect, getToken }) {
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(null);
 
   const fetchAgents = useCallback(async () => {
     try {
@@ -27,6 +28,21 @@ export default function AgentList({ selectedId, onSelect, getToken }) {
     const interval = setInterval(fetchAgents, 15000); // refresh status every 15s
     return () => clearInterval(interval);
   }, [fetchAgents]);
+
+  const deleteAgent = useCallback(async (e, agentId) => {
+    e.stopPropagation();
+    if (!window.confirm('Delete this agent?')) return;
+    setDeleting(agentId);
+    try {
+      await fetch(`${API_URL}/api/agents/${agentId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${getToken()}` }
+      });
+      if (selectedId === agentId) onSelect(null);
+      await fetchAgents();
+    } catch { /* ignore */ }
+    setDeleting(null);
+  }, [getToken, fetchAgents, selectedId, onSelect]);
 
   if (loading) return (
     <div style={s.wrapper}>
@@ -59,17 +75,26 @@ export default function AgentList({ selectedId, onSelect, getToken }) {
       {agents.map(agent => {
         const sc = STATUS_COLORS[agent.status] || STATUS_COLORS.offline;
         return (
-          <button
-            key={agent.id}
-            onClick={() => onSelect(agent.id)}
-            style={{ ...s.agentBtn, ...(selectedId === agent.id ? s.agentSelected : {}) }}
-          >
-            <span style={{ ...s.dot, background: sc.dot, boxShadow: agent.status === 'online' ? `0 0 6px ${sc.dot}66` : 'none' }} />
-            <div style={s.agentInfo}>
-              <div style={s.agentName}>{agent.name}</div>
-              <div style={s.agentMeta}>{agent.status}</div>
-            </div>
-          </button>
+          <div key={agent.id} style={s.agentRow}>
+            <button
+              onClick={() => onSelect(agent.id)}
+              style={{ ...s.agentBtn, ...(selectedId === agent.id ? s.agentSelected : {}) }}
+            >
+              <span style={{ ...s.dot, background: sc.dot, boxShadow: agent.status === 'online' ? `0 0 6px ${sc.dot}66` : 'none' }} />
+              <div style={s.agentInfo}>
+                <div style={s.agentName}>{agent.name}</div>
+                <div style={s.agentMeta}>{agent.status}</div>
+              </div>
+            </button>
+            <button
+              onClick={(e) => deleteAgent(e, agent.id)}
+              disabled={deleting === agent.id}
+              style={s.deleteBtn}
+              title="Delete agent"
+            >
+              {deleting === agent.id ? '…' : '✕'}
+            </button>
+          </div>
         );
       })}
 
@@ -82,6 +107,8 @@ export default function AgentList({ selectedId, onSelect, getToken }) {
 
 const s = {
   wrapper: { display: 'flex', flexDirection: 'column' },
+  agentRow: { display: 'flex', alignItems: 'center', gap: 4 },
+  deleteBtn: { background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: 11, flexShrink: 0, padding: '4px 6px', borderRadius: 4, lineHeight: 1 },
   header: { alignItems: 'center', display: 'flex', justifyContent: 'space-between', marginBottom: 8, padding: '0 2px' },
   title: { color: '#6e7681', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' },
   count: { background: '#21262d', borderRadius: 8, color: '#8b949e', fontSize: 10, fontWeight: 700, padding: '1px 6px' },
